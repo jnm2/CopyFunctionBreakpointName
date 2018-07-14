@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <Extern href="stdidcmd.h"/>
+  <Extern href="vsshlids.h"/>
+
+  <Commands package="guidCopyFunctionBreakpointNamePackage">
+    <Groups>
+      <Group guid="guidCopyFunctionBreakpointNamePackageCmdSet" id="MyMenuGroup" priority="0x0600">
+        <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_CODEWIN"/>
+      </Group>
+    </Groups>
+
+    <Buttons>
+      <Button guid="guidCopyFunctionBreakpointNamePackageCmdSet" id="CopyFunctionBreakpointNameCommandId" priority="0x0100" type="Button">
+        <Parent guid="guidCopyFunctionBreakpointNamePackageCmdSet" id="MyMenuGroup" />
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Copy function breakpoint name</ButtonText>
+        </Strings>
+      </Button>
+    </Buttons>
+  </Commands>
+
+  <Symbols>
+    <GuidSymbol name="guidCopyFunctionBreakpointNamePackage" value="{b78d32a2-8af1-4838-858e-6f865bd7b291}" />
+
+    <GuidSymbol name="guidCopyFunctionBreakpointNamePackageCmdSet" value="{840b69a0-a468-4950-8c25-16bb7a846a58}">
+      <IDSymbol name="MyMenuGroup" value="0x1020" />
+      <IDSymbol name="CopyFunctionBreakpointNameCommandId" value="0x0100" />
+    </GuidSymbol>
+  </Symbols>
+</CommandTable>
