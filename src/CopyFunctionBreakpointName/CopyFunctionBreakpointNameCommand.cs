@@ -28,7 +28,7 @@ namespace CopyFunctionBreakpointName
         }
 
         public static MenuCommand Create(
-            AsyncPackage package, 
+            AsyncPackage package,
             AsyncLazy<(IVsTextManager textManager, IVsEditorAdaptersFactoryService editorAdaptersFactoryService)> lazyServices)
         {
             var closure = new CopyFunctionBreakpointNameCommand(package, lazyServices);
@@ -45,8 +45,10 @@ namespace CopyFunctionBreakpointName
             var source = new CancellationTokenSource();
             try
             {
-                ((MenuCommand)sender).Visible = 
-                    !GetFunctionBreakpointNameFactoryAsync(source.Token).TryGetResult(out var factory) 
+                var task = GetFunctionBreakpointNameFactoryAsync(source.Token);
+
+                ((MenuCommand)sender).Visible =
+                    !task.TryGetResult(out var factory)
                     || factory != null;
             }
             finally
@@ -57,23 +59,28 @@ namespace CopyFunctionBreakpointName
 
         private void InvokeHandler(object sender, EventArgs e)
         {
-            var factory = package.JoinableTaskFactory.Run(() => GetFunctionBreakpointNameFactoryAsync(CancellationToken.None));
-            if (factory == null) return;
+            package.JoinableTaskFactory.Run(
+                "Copy function breakpoint name",
+                "Copying the function breakpoint name to the clipboard...",
+                async (progress, cancellationToken) =>
+                {
+                    var factory = await GetFunctionBreakpointNameFactoryAsync(cancellationToken);
 
-            Clipboard.SetText(factory.Value.ToString());
+                    if (factory != null)
+                        Clipboard.SetText(factory.Value.ToString());
+                });
         }
 
         private async Task<FunctionBreakpointNameFactory?> GetFunctionBreakpointNameFactoryAsync(CancellationToken cancellationToken)
         {
-            var (textManager, editorAdaptersFactoryService) = 
-                await lazyServices.GetValueAsync(cancellationToken).ConfigureAwait(false);
+            var (textManager, editorAdaptersFactoryService) = await lazyServices.GetValueAsync(cancellationToken);
 
             ErrorHandler.ThrowOnFailure(textManager.GetActiveView(fMustHaveFocus: 1, pBuffer: null, out var view));
             var activeViewSelection = editorAdaptersFactoryService.GetWpfTextView(view).Selection;
             var document = activeViewSelection.Start.Position.Snapshot.GetOpenDocumentInCurrentContextWithChanges();
 
             return FunctionBreakpointUtils.GetFunctionBreakpointNameFactory(
-                await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false),
+                await document.GetSyntaxRootAsync(cancellationToken),
                 TextSpan.FromBounds(
                     activeViewSelection.Start.Position.Position,
                     activeViewSelection.End.Position.Position));

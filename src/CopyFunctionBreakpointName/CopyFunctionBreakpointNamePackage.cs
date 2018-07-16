@@ -2,7 +2,6 @@
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
 using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Shell;
@@ -24,22 +23,21 @@ namespace CopyFunctionBreakpointName
 
         protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {
-            if (JoinableTaskFactory.Context.IsOnMainThread) await TaskScheduler.Default;
-            
-            var menuService = (IMenuCommandService)await GetServiceAsync(typeof(IMenuCommandService)).ResumeOnMainThread(JoinableTaskFactory);
-           
+            var menuService = (IMenuCommandService)await GetServiceAsync(typeof(IMenuCommandService));
+
             var lazyServices = new AsyncLazy<(IVsTextManager, IVsEditorAdaptersFactoryService)>(async () =>
             {
                 var (componentModel, textManager) = ((IComponentModel, IVsTextManager))
                     await (
                         GetServiceAsync(typeof(SComponentModel)),
-                        GetServiceAsync(typeof(SVsTextManager))
-                    ).ConfigureAwait(false);
+                        GetServiceAsync(typeof(SVsTextManager)));
 
                 return (
                     textManager,
                     componentModel.GetService<IVsEditorAdaptersFactoryService>());
             }, JoinableTaskFactory);
+
+            await JoinableTaskFactory.SwitchToMainThreadAsync();
 
             menuService.AddCommand(CopyFunctionBreakpointNameCommand.Create(this, lazyServices));
         }
