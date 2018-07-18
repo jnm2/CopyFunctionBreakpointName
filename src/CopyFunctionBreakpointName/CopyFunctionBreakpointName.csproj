@@ -69,13 +69,12 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CopyFunctionBreakpointNameCommand.cs" />
     <Compile Include="CopyFunctionBreakpointNamePackage.cs" />
+    <Compile Include="CopyFunctionBreakpointNameService.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="FunctionBreakpointNameFactory.cs" />
     <Compile Include="FunctionBreakpointUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TaskTupleExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Key.snk" />

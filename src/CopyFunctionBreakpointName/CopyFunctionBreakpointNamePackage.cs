@@ -6,7 +6,6 @@ using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.TextManager.Interop;
-using Microsoft.VisualStudio.Threading;
 using Task = System.Threading.Tasks.Task;
 
 namespace CopyFunctionBreakpointName
@@ -27,23 +26,19 @@ namespace CopyFunctionBreakpointName
 
         protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {
-            var menuService = (IMenuCommandService)await GetServiceAsync(typeof(IMenuCommandService));
+            var componentModel = (IComponentModel)await GetServiceAsync(typeof(SComponentModel));
+            var editorAdaptersFactoryService = componentModel.GetService<IVsEditorAdaptersFactoryService>();
 
-            var lazyServices = new AsyncLazy<(IVsTextManager, IVsEditorAdaptersFactoryService)>(async () =>
-            {
-                var (componentModel, textManager) = ((IComponentModel, IVsTextManager))
-                    await (
-                        GetServiceAsync(typeof(SComponentModel)),
-                        GetServiceAsync(typeof(SVsTextManager)));
+            await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
 
-                return (
-                    textManager,
-                    componentModel.GetService<IVsEditorAdaptersFactoryService>());
-            }, JoinableTaskFactory);
+            var textManager = (IVsTextManager)await GetServiceAsync(typeof(SVsTextManager));
+            var menuCommandService = (IMenuCommandService)await GetServiceAsync(typeof(IMenuCommandService));
 
-            await JoinableTaskFactory.SwitchToMainThreadAsync();
-
-            menuService.AddCommand(CopyFunctionBreakpointNameCommand.Create(this, lazyServices));
+            _ = new CopyFunctionBreakpointNameService(
+                textManager,
+                editorAdaptersFactoryService,
+                menuCommandService,
+                JoinableTaskFactory);
         }
     }
 }
