@@ -12,7 +12,6 @@ using Task = System.Threading.Tasks.Task;
 namespace CopyFunctionBreakpointName
 {
     [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
-    [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)] // Info on this package for Help/About
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [Guid(PackageGuidString)]
     [ProvideAutoLoad(UIContextGuid, PackageAutoLoadFlags.BackgroundLoad)]
