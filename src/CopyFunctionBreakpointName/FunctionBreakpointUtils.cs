@@ -44,6 +44,9 @@ namespace CopyFunctionBreakpointName
                         accessor: null);
                 }
 
+                case DestructorDeclarationSyntax destructor when destructor.Identifier.Span.Contains(selectionRange):
+                    return new FunctionBreakpointNameFactory(destructor, SyntaxFactory.Identifier("Finalize"), accessor: null);
+
                 case PropertyDeclarationSyntax property when property.Identifier.Span.Contains(selectionRange):
                     return new FunctionBreakpointNameFactory(property, property.Identifier, accessor: null);
 
