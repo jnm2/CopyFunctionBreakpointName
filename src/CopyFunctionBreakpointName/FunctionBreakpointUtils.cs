@@ -1,4 +1,7 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
@@ -7,14 +10,19 @@ namespace CopyFunctionBreakpointName
 {
     public static class FunctionBreakpointUtils
     {
-        private static readonly SyntaxToken IndexerDefaultName = SyntaxFactory.Identifier("Item");
-
-        public static FunctionBreakpointNameFactory? GetFunctionBreakpointNameFactory(SyntaxNode syntaxRoot, TextSpan selectionRange)
+        public static async Task<FunctionBreakpointNameFactory?> GetFunctionBreakpointNameFactoryAsync(
+            SyntaxNode syntaxRoot,
+            TextSpan selectionRange,
+            Func<CancellationToken, Task<SemanticModel>> semanticModelAccessor,
+            CancellationToken cancellationToken)
         {
+            if (syntaxRoot == null) throw new ArgumentNullException(nameof(syntaxRoot));
+            if (semanticModelAccessor == null) throw new ArgumentNullException(nameof(semanticModelAccessor));
+
             if (selectionRange.IsEmpty)
             {
-                return GetFunctionBreakpointNameFactory(syntaxRoot, new TextSpan(selectionRange.Start, 1))
-                    ?? GetFunctionBreakpointNameFactory(syntaxRoot, new TextSpan(selectionRange.Start - 1, 1));
+                return await GetFunctionBreakpointNameFactoryAsync(syntaxRoot, new TextSpan(selectionRange.Start, 1), semanticModelAccessor, cancellationToken).ConfigureAwait(false)
+                    ?? await GetFunctionBreakpointNameFactoryAsync(syntaxRoot, new TextSpan(selectionRange.Start - 1, 1), semanticModelAccessor, cancellationToken).ConfigureAwait(false);
             }
 
             if (!(syntaxRoot is CSharpSyntaxNode csharpSyntaxRoot)) return null;
@@ -28,7 +36,11 @@ namespace CopyFunctionBreakpointName
                     return new FunctionBreakpointNameFactory(property, property.Identifier, accessor: null);
 
                 case IndexerDeclarationSyntax indexer when indexer.ThisKeyword.Span.Contains(selectionRange):
-                    return new FunctionBreakpointNameFactory(indexer, IndexerDefaultName, accessor: null);
+                {
+                    var semanticModel = await semanticModelAccessor.Invoke(cancellationToken).ConfigureAwait(false);
+                    var metadataName = GetIndexerMetadataName(indexer, semanticModel);
+                    return new FunctionBreakpointNameFactory(indexer, metadataName, accessor: null);
+                }
 
                 case AccessorDeclarationSyntax accessor when accessor.Keyword.Span.Contains(selectionRange):
                     switch (accessor.Parent.Parent)
@@ -37,7 +49,11 @@ namespace CopyFunctionBreakpointName
                             return new FunctionBreakpointNameFactory(property, property.Identifier, accessor);
 
                         case IndexerDeclarationSyntax indexer:
-                            return new FunctionBreakpointNameFactory(indexer, IndexerDefaultName, accessor);
+                        {
+                            var semanticModel = await semanticModelAccessor.Invoke(cancellationToken).ConfigureAwait(false);
+                            var metadataName = GetIndexerMetadataName(indexer, semanticModel);
+                            return new FunctionBreakpointNameFactory(indexer, metadataName, accessor);
+                        }
 
                         case EventDeclarationSyntax @event:
                             return new FunctionBreakpointNameFactory(@event, @event.Identifier, accessor);
@@ -51,6 +67,13 @@ namespace CopyFunctionBreakpointName
                 default:
                     return null;
             }
+        }
+
+        private static SyntaxToken GetIndexerMetadataName(IndexerDeclarationSyntax indexer, SemanticModel semanticModel)
+        {
+            var metadataName = semanticModel.GetDeclaredSymbol(indexer).MetadataName;
+
+            return SyntaxFactory.Identifier(metadataName);
         }
     }
 }

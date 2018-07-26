@@ -260,7 +260,7 @@ class A
             await AssertFunctionBreakpointName(@"
 class A
 {
-    int B { [|set|]; }
+    int B { get; [|set|]; }
 }", "A.B.set");
         }
 
