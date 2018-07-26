@@ -240,6 +240,18 @@ struct A
         }
 
         [Test]
+        public static async Task Finalizer()
+        {
+            await AssertFunctionBreakpointName(@"
+class A
+{
+    ~[|A|]()
+    {
+    }
+}", "A.Finalize");
+        }
+
+        [Test]
         public static async Task Local_function_returns_nothing()
         {
             await AssertFunctionBreakpointName(@"
