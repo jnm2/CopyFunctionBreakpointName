@@ -4,7 +4,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Text;
 using NUnit.Framework;
+using Shouldly;
 
 #pragma warning disable VSTHRD200, UseAsyncSuffix // Test methods don’t need async suffix
 
@@ -12,6 +14,24 @@ namespace CopyFunctionBreakpointName.Tests
 {
     public static class FunctionBreakpointUtilsTests
     {
+        [Test]
+        public static async Task Null_syntax_root_argument_exception()
+        {
+            var ex = await Should.ThrowAsync<ArgumentNullException>(
+                () => FunctionBreakpointUtils.GetFunctionBreakpointNameFactoryAsync(syntaxRoot: null, new TextSpan(0, 0), c => null, default));
+
+            ex.ParamName.ShouldBe("syntaxRoot");
+        }
+
+        [Test]
+        public static async Task Null_semantic_model_accessor_argument_exception()
+        {
+            var ex = await Should.ThrowAsync<ArgumentNullException>(
+                () => FunctionBreakpointUtils.GetFunctionBreakpointNameFactoryAsync(SyntaxFactory.IdentifierName(""), new TextSpan(0, 0), semanticModelAccessor: null, default));
+
+            ex.ParamName.ShouldBe("semanticModelAccessor");
+        }
+
         [Test]
         public static async Task Namespace_not_needed()
         {
