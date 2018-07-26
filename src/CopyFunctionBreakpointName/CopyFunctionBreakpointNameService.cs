@@ -74,11 +74,13 @@ namespace CopyFunctionBreakpointName
             var activeViewSelection = editorAdaptersFactoryService.GetWpfTextView(view).Selection;
             var document = activeViewSelection.Start.Position.Snapshot.GetOpenDocumentInCurrentContextWithChanges();
 
-            return FunctionBreakpointUtils.GetFunctionBreakpointNameFactory(
+            return await FunctionBreakpointUtils.GetFunctionBreakpointNameFactoryAsync(
                 await document.GetSyntaxRootAsync(cancellationToken),
                 TextSpan.FromBounds(
                     activeViewSelection.Start.Position.Position,
-                    activeViewSelection.End.Position.Position));
+                    activeViewSelection.End.Position.Position),
+                document.GetSemanticModelAsync,
+                cancellationToken);
         }
     }
 }

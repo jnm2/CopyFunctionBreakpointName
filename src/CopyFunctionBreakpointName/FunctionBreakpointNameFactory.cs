@@ -56,6 +56,7 @@ namespace CopyFunctionBreakpointName
             switch (accessor?.Parent.Parent)
             {
                 case PropertyDeclarationSyntax _:
+                case IndexerDeclarationSyntax _:
                     sb.Append(memberIdentifier.ValueText).Append('.').Append(accessor.Keyword.ValueText);
                     break;
                 case EventDeclarationSyntax _:
