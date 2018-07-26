@@ -192,6 +192,54 @@ class A
         }
 
         [Test]
+        public static async Task Class_instance_constructor()
+        {
+            await AssertFunctionBreakpointName(@"
+class A
+{
+    [|A|]()
+    {
+    }
+}", "A.A");
+        }
+
+        [Test]
+        public static async Task Class_static_constructor()
+        {
+            await AssertFunctionBreakpointName(@"
+class A
+{
+    static [|A|]()
+    {
+    }
+}", "A.cctor");
+        }
+
+        [Test]
+        public static async Task Struct_instance_constructor()
+        {
+            await AssertFunctionBreakpointName(@"
+struct A
+{
+    [|A|](int x)
+    {
+    }
+}", "A.A");
+        }
+
+        [Test(Description = "There does not appear to be a way to set a breakpoint on a struct static constructor by function name.")]
+        public static async Task Struct_static_constructor()
+        {
+            await AssertFunctionBreakpointName(@"
+struct A
+{
+    static [|A|]()
+    {
+    }
+}", null);
+        }
+
+        [Test]
         public static async Task Local_function_returns_nothing()
         {
             await AssertFunctionBreakpointName(@"
