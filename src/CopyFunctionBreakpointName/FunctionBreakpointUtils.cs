@@ -7,6 +7,8 @@ namespace CopyFunctionBreakpointName
 {
     public static class FunctionBreakpointUtils
     {
+        private static readonly SyntaxToken IndexerDefaultName = SyntaxFactory.Identifier("Item");
+
         public static FunctionBreakpointNameFactory? GetFunctionBreakpointNameFactory(SyntaxNode syntaxRoot, TextSpan selectionRange)
         {
             if (selectionRange.IsEmpty)
@@ -25,11 +27,17 @@ namespace CopyFunctionBreakpointName
                 case PropertyDeclarationSyntax property when property.Identifier.Span.Contains(selectionRange):
                     return new FunctionBreakpointNameFactory(property, property.Identifier, accessor: null);
 
+                case IndexerDeclarationSyntax indexer when indexer.ThisKeyword.Span.Contains(selectionRange):
+                    return new FunctionBreakpointNameFactory(indexer, IndexerDefaultName, accessor: null);
+
                 case AccessorDeclarationSyntax accessor when accessor.Keyword.Span.Contains(selectionRange):
                     switch (accessor.Parent.Parent)
                     {
                         case PropertyDeclarationSyntax property:
                             return new FunctionBreakpointNameFactory(property, property.Identifier, accessor);
+
+                        case IndexerDeclarationSyntax indexer:
+                            return new FunctionBreakpointNameFactory(indexer, IndexerDefaultName, accessor);
 
                         case EventDeclarationSyntax @event:
                             return new FunctionBreakpointNameFactory(@event, @event.Identifier, accessor);
@@ -38,7 +46,7 @@ namespace CopyFunctionBreakpointName
                             return null;
                     }
 
-                // New Function Breakpoint window does not add breakpoints for event accessors by event name. 
+                // New Function Breakpoint window does not add breakpoints for event accessors by event name.
 
                 default:
                     return null;
