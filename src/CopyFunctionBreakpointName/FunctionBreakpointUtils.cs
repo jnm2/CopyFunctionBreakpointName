@@ -32,6 +32,18 @@ namespace CopyFunctionBreakpointName
                 case MethodDeclarationSyntax method when method.Identifier.Span.Contains(selectionRange):
                     return new FunctionBreakpointNameFactory(method, method.Identifier, accessor: null);
 
+                case ConstructorDeclarationSyntax constructor when constructor.Identifier.Span.Contains(selectionRange):
+                {
+                    var isStatic = constructor.Modifiers.Any(SyntaxKind.StaticKeyword);
+
+                    if (isStatic && constructor.Parent is StructDeclarationSyntax) return null;
+
+                    return new FunctionBreakpointNameFactory(
+                        constructor,
+                        isStatic ? SyntaxFactory.Identifier("cctor") : constructor.Identifier,
+                        accessor: null);
+                }
+
                 case PropertyDeclarationSyntax property when property.Identifier.Span.Contains(selectionRange):
                     return new FunctionBreakpointNameFactory(property, property.Identifier, accessor: null);
 
