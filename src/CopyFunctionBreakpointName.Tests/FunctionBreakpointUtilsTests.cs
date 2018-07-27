@@ -966,19 +966,16 @@ class A
             var syntaxTree = CSharpSyntaxTree.ParseText(source);
 
             var compilation = new Lazy<CSharpCompilation>(() =>
-            {
-                var result = CSharpCompilation.Create(
+                CSharpCompilation.Create(
                     nameof(GetFunctionBreakpointNameAsync),
                     new[] { syntaxTree },
                     new[] { MetadataReference.CreateFromFile(typeof(object).Assembly.Location) },
-                    new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+                    new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary)));
 
-                Assert.That(result.GetDiagnostics().Where(d => d.Severity == DiagnosticSeverity.Error), Is.Empty);
-
-                return result;
-            });
-
-            if (!permitCompilationErrors) _ = compilation.Value;
+            if (!permitCompilationErrors)
+            {
+                Assert.That(compilation.Value.GetDiagnostics().Where(d => d.Severity == DiagnosticSeverity.Error), Is.Empty);
+            }
 
             var factory = await FunctionBreakpointUtils.GetFunctionBreakpointNameFactoryAsync(
                 await syntaxTree.GetRootAsync().ConfigureAwait(false),
