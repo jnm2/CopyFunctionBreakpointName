@@ -523,6 +523,437 @@ class A
 }", "A.remove_B");
         }
 
+        [Test]
+        public static async Task Operator_select_only_token()
+        {
+            await AssertFunctionBreakpointName(@"
+class A
+{
+    public static A operator [|+|](A a) => a;
+}", "A.op_UnaryPlus");
+        }
+
+        [Test]
+        public static async Task Operator_select_before_token()
+        {
+            await AssertFunctionBreakpointName(@"
+class A
+{
+    public static A operator [||]+(A a) => a;
+}", "A.op_UnaryPlus");
+        }
+
+        [Test]
+        public static async Task Operator_select_after_token()
+        {
+            await AssertFunctionBreakpointName(@"
+class A
+{
+    public static A operator +[||](A a) => a;
+}", "A.op_UnaryPlus");
+        }
+
+        [Test]
+        public static async Task Operator_select_before_keyword()
+        {
+            await AssertFunctionBreakpointName(@"
+class A
+{
+    public static A [||]operator +(A a) => a;
+}", "A.op_UnaryPlus");
+        }
+
+        [Test]
+        public static async Task Operator_select_after_keyword()
+        {
+            await AssertFunctionBreakpointName(@"
+class A
+{
+    public static A operator[||] +(A a) => a;
+}", "A.op_UnaryPlus");
+        }
+
+        [Test]
+        public static async Task Operator_select_keyword_and_token()
+        {
+            await AssertFunctionBreakpointName(@"
+class A
+{
+    public static A [|operator +|](A a) => a;
+}", "A.op_UnaryPlus");
+        }
+
+        [Test]
+        public static async Task Operator_select_partial_token_and_space_after_keyword()
+        {
+            await AssertFunctionBreakpointName(@"
+class A
+{
+    public static A operator[| +|]+(A a) => a;
+}", "A.op_Increment");
+        }
+
+        [Test]
+        public static async Task Operator_select_partial_keyword_and_space_before_token()
+        {
+            await AssertFunctionBreakpointName(@"
+class A
+{
+    public static A operato[|r |]+(A a) => a;
+}", "A.op_UnaryPlus");
+        }
+
+        [Test]
+        public static async Task Operator_nonzero_whitespace_selection_between_keyword_and_token_returns_nothing()
+        {
+            await AssertFunctionBreakpointName(@"
+class A
+{
+    public static A operator[| |]+(A a) => a;
+}", null);
+        }
+
+        [Test]
+        public static async Task Operator_zero_whitespace_selection_touching_neither_keyword_nor_token_returns_nothing()
+        {
+            await AssertFunctionBreakpointName(@"
+class A
+{
+    public static A operator [||] +(A a) => a;
+}", null);
+        }
+
+        [Test]
+        public static async Task Operator_zero_whitespace_selection_touching_both_keyword_and_token()
+        {
+            await AssertFunctionBreakpointName(@"
+class A
+{
+    public static A operator[||]+(A a) => a;
+}", "A.op_UnaryPlus");
+        }
+
+        [Test]
+        public static async Task Operator_character_before_keyword()
+        {
+            await AssertFunctionBreakpointName(@"
+class A
+{
+    public static A[| operator|] +(A a) => a;
+}", null);
+        }
+
+        [Test]
+        public static async Task Conversion_operator_character_before_keyword()
+        {
+            await AssertFunctionBreakpointName(@"
+class A
+{
+    public static A[| operator|] +(A a) => a;
+}", null);
+        }
+
+        [Test]
+        public static async Task Operator_character_after_token()
+        {
+            await AssertFunctionBreakpointName(@"
+class A
+{
+    public static A operator [|+(|]A a) => a;
+}", null);
+        }
+
+        [Test]
+        public static async Task Conversion_operator_type_selection_returns_nothing()
+        {
+
+            await AssertFunctionBreakpointName(@"
+class A
+{
+    public static implicit operator [|bool|](A a) => true;
+}", null);
+        }
+
+        [Test]
+        public static async Task Conversion_operator_implicit_keyword_selection_returns_nothing()
+        {
+
+            await AssertFunctionBreakpointName(@"
+class A
+{
+    public static [|implicit|] operator bool(A a) => true;
+}", null);
+        }
+
+        [Test]
+        public static async Task Operator_Explicit()
+        {
+            await AssertFunctionBreakpointName(@"
+class A
+{
+    public static explicit [|operator|] bool(A a) => true;
+}", "A.op_Explicit");
+        }
+
+        [Test]
+        public static async Task Operator_Implicit()
+        {
+
+            await AssertFunctionBreakpointName(@"
+class A
+{
+    public static implicit [|operator|] bool(A a) => true;
+}", "A.op_Implicit");
+        }
+
+        [Test]
+        public static async Task Operator_UnaryPlus()
+        {
+            await AssertFunctionBreakpointName(@"
+class A
+{
+    public static A [|operator|] +(A a) => a;
+}", "A.op_UnaryPlus");
+        }
+
+        [Test]
+        public static async Task Operator_UnaryNegation()
+        {
+            await AssertFunctionBreakpointName(@"
+class A
+{
+    public static A [|operator|] -(A a) => a;
+}", "A.op_UnaryNegation");
+        }
+
+        [Test]
+        public static async Task Operator_LogicalNot()
+        {
+            await AssertFunctionBreakpointName(@"
+class A
+{
+    public static A [|operator|] !(A a) => a;
+}", "A.op_LogicalNot");
+        }
+
+        [Test]
+        public static async Task Operator_OnesComplement()
+        {
+            await AssertFunctionBreakpointName(@"
+class A
+{
+    public static A [|operator|] ~(A a) => a;
+}", "A.op_OnesComplement");
+        }
+
+        [Test]
+        public static async Task Operator_Increment()
+        {
+            await AssertFunctionBreakpointName(@"
+class A
+{
+    public static A [|operator|] ++(A a) => a;
+}", "A.op_Increment");
+        }
+
+        [Test]
+        public static async Task Operator_Decrement()
+        {
+            await AssertFunctionBreakpointName(@"
+class A
+{
+    public static A [|operator|] --(A a) => a;
+}", "A.op_Decrement");
+        }
+
+        [Test]
+        public static async Task Operator_True()
+        {
+            await AssertFunctionBreakpointName(@"
+class A
+{
+    public static bool [|operator|] true(A a) => true;
+    public static bool operator false(A a) => false;
+}", "A.op_True");
+        }
+
+        [Test]
+        public static async Task Operator_False()
+        {
+            await AssertFunctionBreakpointName(@"
+class A
+{
+    public static bool [|operator|] false(A a) => false;
+    public static bool operator true(A a) => true;
+}", "A.op_False");
+        }
+
+        [Test]
+        public static async Task Operator_Addition()
+        {
+            await AssertFunctionBreakpointName(@"
+class A
+{
+    public static A [|operator|] +(A left, A right) => left;
+}", "A.op_Addition");
+        }
+
+        [Test]
+        public static async Task Operator_Subtraction()
+        {
+            await AssertFunctionBreakpointName(@"
+class A
+{
+    public static A [|operator|] -(A left, A right) => left;
+}", "A.op_Subtraction");
+        }
+
+        [Test]
+        public static async Task Operator_Multiply()
+        {
+            await AssertFunctionBreakpointName(@"
+class A
+{
+    public static A [|operator|] *(A left, A right) => left;
+}", "A.op_Multiply");
+        }
+
+        [Test]
+        public static async Task Operator_Division()
+        {
+            await AssertFunctionBreakpointName(@"
+class A
+{
+    public static A [|operator|] /(A left, A right) => left;
+}", "A.op_Division");
+        }
+
+        [Test]
+        public static async Task Operator_Modulus()
+        {
+            await AssertFunctionBreakpointName(@"
+class A
+{
+    public static A [|operator|] %(A left, A right) => left;
+}", "A.op_Modulus");
+        }
+
+        [Test]
+        public static async Task Operator_BitwiseAnd()
+        {
+            await AssertFunctionBreakpointName(@"
+class A
+{
+    public static A [|operator|] &(A left, A right) => left;
+}", "A.op_BitwiseAnd");
+        }
+
+        [Test]
+        public static async Task Operator_BitwiseOr()
+        {
+            await AssertFunctionBreakpointName(@"
+class A
+{
+    public static A [|operator|] |(A left, A right) => left;
+}", "A.op_BitwiseOr");
+        }
+
+        [Test]
+        public static async Task Operator_ExclusiveOr()
+        {
+            await AssertFunctionBreakpointName(@"
+class A
+{
+    public static A [|operator|] ^(A left, A right) => left;
+}", "A.op_ExclusiveOr");
+        }
+
+        [Test]
+        public static async Task Operator_LeftShift()
+        {
+            await AssertFunctionBreakpointName(@"
+class A
+{
+    public static A [|operator|] <<(A a, int shift) => a;
+}", "A.op_LeftShift");
+        }
+
+        [Test]
+        public static async Task Operator_RightShift()
+        {
+            await AssertFunctionBreakpointName(@"
+class A
+{
+    public static A [|operator|] >>(A a, int shift) => a;
+}", "A.op_RightShift");
+        }
+
+        [Test]
+        public static async Task Operator_Equality()
+        {
+            await AssertFunctionBreakpointName(@"
+class A
+{
+    public static bool [|operator|] ==(A left, A right) => true;
+    public static bool operator !=(A left, A right) => false;
+}", "A.op_Equality");
+        }
+
+        [Test]
+        public static async Task Operator_Inequality()
+        {
+            await AssertFunctionBreakpointName(@"
+class A
+{
+    public static bool [|operator|] !=(A left, A right) => true;
+    public static bool operator ==(A left, A right) => false;
+}", "A.op_Inequality");
+        }
+
+        [Test]
+        public static async Task Operator_LessThan()
+        {
+            await AssertFunctionBreakpointName(@"
+class A
+{
+    public static bool [|operator|] <(A left, A right) => true;
+    public static bool operator >(A left, A right) => false;
+}", "A.op_LessThan");
+        }
+
+        [Test]
+        public static async Task Operator_GreaterThan()
+        {
+            await AssertFunctionBreakpointName(@"
+class A
+{
+    public static bool [|operator|] >(A left, A right) => true;
+    public static bool operator <(A left, A right) => false;
+}", "A.op_GreaterThan");
+        }
+
+        [Test]
+        public static async Task Operator_LessThanOrEqual()
+        {
+            await AssertFunctionBreakpointName(@"
+class A
+{
+    public static bool [|operator|] <=(A left, A right) => true;
+    public static bool operator >=(A left, A right) => false;
+}", "A.op_LessThanOrEqual");
+        }
+
+        [Test]
+        public static async Task Operator_GreaterThanOrEqual()
+        {
+            await AssertFunctionBreakpointName(@"
+class A
+{
+    public static bool [|operator|] >=(A left, A right) => true;
+    public static bool operator <=(A left, A right) => false;
+}", "A.op_GreaterThanOrEqual");
+        }
+
         private static async Task AssertFunctionBreakpointName(string annotatedSource, string expected)
         {
             Assert.That(await GetFunctionBreakpointNameAsync(annotatedSource), Is.EqualTo(expected));
