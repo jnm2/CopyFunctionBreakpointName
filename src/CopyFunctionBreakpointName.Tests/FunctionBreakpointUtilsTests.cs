@@ -954,6 +954,96 @@ class A
 }", "A.op_GreaterThanOrEqual");
         }
 
+        [Test]
+        public static async Task Explicit_method_returns_nothing()
+        {
+            await AssertFunctionBreakpointName(@"
+interface ITest
+{
+    void Test();
+}
+
+class A : ITest
+{
+    void ITest.[|Test|]() { }
+}", null);
+        }
+
+        [Test]
+        public static async Task Explicit_property_returns_nothing()
+        {
+            await AssertFunctionBreakpointName(@"
+interface ITest
+{
+    int Test { get; }
+}
+
+class A : ITest
+{
+    int ITest.[|Test|] => 0;
+}", null);
+        }
+
+        [Test]
+        public static async Task Explicit_property_getter_returns_nothing()
+        {
+            await AssertFunctionBreakpointName(@"
+interface ITest
+{
+    int Test { get; }
+}
+
+class A : ITest
+{
+    int ITest.Test { [|get|] => 0; }
+}", null);
+        }
+
+        [Test]
+        public static async Task Explicit_indexed_property_returns_nothing()
+        {
+            await AssertFunctionBreakpointName(@"
+interface ITest
+{
+    int this[int index] { get; }
+}
+
+class A : ITest
+{
+    int ITest.[|this|][int index] => 0;
+}", null);
+        }
+
+        [Test]
+        public static async Task Explicit_indexed_property_getter_returns_nothing()
+        {
+            await AssertFunctionBreakpointName(@"
+interface ITest
+{
+    int this[int index] { get; }
+}
+
+class A : ITest
+{
+    int ITest.this[int index] { [|get|] => 0; }
+}", null);
+        }
+
+        [Test]
+        public static async Task Explicit_event_add_accessor_returns_nothing()
+        {
+            await AssertFunctionBreakpointName(@"
+interface ITest
+{
+    event System.EventHandler Test;
+}
+
+class A : ITest
+{
+    event System.EventHandler ITest.Test { [|add|] { } remove { } }
+}", null);
+        }
+
         private static async Task AssertFunctionBreakpointName(string annotatedSource, string expected)
         {
             Assert.That(await GetFunctionBreakpointNameAsync(annotatedSource), Is.EqualTo(expected));
