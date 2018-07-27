@@ -29,8 +29,11 @@ namespace CopyFunctionBreakpointName
 
             switch (csharpSyntaxRoot.FindNode(selectionRange))
             {
-                case MethodDeclarationSyntax method when method.Identifier.Span.Contains(selectionRange):
+                case MethodDeclarationSyntax method when method.ExplicitInterfaceSpecifier == null
+                                                         && method.Identifier.Span.Contains(selectionRange):
+                {
                     return new FunctionBreakpointNameFactory(method, method.Identifier, accessor: null);
+                }
 
                 case ConstructorDeclarationSyntax constructor when constructor.Identifier.Span.Contains(selectionRange):
                 {
@@ -45,12 +48,18 @@ namespace CopyFunctionBreakpointName
                 }
 
                 case DestructorDeclarationSyntax destructor when destructor.Identifier.Span.Contains(selectionRange):
+                {
                     return new FunctionBreakpointNameFactory(destructor, SyntaxFactory.Identifier("Finalize"), accessor: null);
+                }
 
-                case PropertyDeclarationSyntax property when property.Identifier.Span.Contains(selectionRange):
+                case PropertyDeclarationSyntax property when property.ExplicitInterfaceSpecifier == null
+                                                             && property.Identifier.Span.Contains(selectionRange):
+                {
                     return new FunctionBreakpointNameFactory(property, property.Identifier, accessor: null);
+                }
 
-                case IndexerDeclarationSyntax indexer when indexer.ThisKeyword.Span.Contains(selectionRange):
+                case IndexerDeclarationSyntax indexer when indexer.ExplicitInterfaceSpecifier == null
+                                                           && indexer.ThisKeyword.Span.Contains(selectionRange):
                 {
                     var semanticModel = await semanticModelAccessor.Invoke(cancellationToken).ConfigureAwait(false);
                     var metadataName = GetMetadataName(indexer, semanticModel);
@@ -60,18 +69,22 @@ namespace CopyFunctionBreakpointName
                 case AccessorDeclarationSyntax accessor when accessor.Keyword.Span.Contains(selectionRange):
                     switch (accessor.Parent.Parent)
                     {
-                        case PropertyDeclarationSyntax property:
+                        case PropertyDeclarationSyntax property when property.ExplicitInterfaceSpecifier == null:
+                        {
                             return new FunctionBreakpointNameFactory(property, property.Identifier, accessor);
+                        }
 
-                        case IndexerDeclarationSyntax indexer:
+                        case IndexerDeclarationSyntax indexer when indexer.ExplicitInterfaceSpecifier == null:
                         {
                             var semanticModel = await semanticModelAccessor.Invoke(cancellationToken).ConfigureAwait(false);
                             var metadataName = GetMetadataName(indexer, semanticModel);
                             return new FunctionBreakpointNameFactory(indexer, metadataName, accessor);
                         }
 
-                        case EventDeclarationSyntax @event:
+                        case EventDeclarationSyntax @event when @event.ExplicitInterfaceSpecifier == null:
+                        {
                             return new FunctionBreakpointNameFactory(@event, @event.Identifier, accessor);
+                        }
 
                         default:
                             return null;
