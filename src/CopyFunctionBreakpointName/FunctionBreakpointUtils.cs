@@ -53,7 +53,7 @@ namespace CopyFunctionBreakpointName
                 case IndexerDeclarationSyntax indexer when indexer.ThisKeyword.Span.Contains(selectionRange):
                 {
                     var semanticModel = await semanticModelAccessor.Invoke(cancellationToken).ConfigureAwait(false);
-                    var metadataName = GetIndexerMetadataName(indexer, semanticModel);
+                    var metadataName = GetMetadataName(indexer, semanticModel);
                     return new FunctionBreakpointNameFactory(indexer, metadataName, accessor: null);
                 }
 
@@ -66,7 +66,7 @@ namespace CopyFunctionBreakpointName
                         case IndexerDeclarationSyntax indexer:
                         {
                             var semanticModel = await semanticModelAccessor.Invoke(cancellationToken).ConfigureAwait(false);
-                            var metadataName = GetIndexerMetadataName(indexer, semanticModel);
+                            var metadataName = GetMetadataName(indexer, semanticModel);
                             return new FunctionBreakpointNameFactory(indexer, metadataName, accessor);
                         }
 
@@ -77,6 +77,23 @@ namespace CopyFunctionBreakpointName
                             return null;
                     }
 
+                case OperatorDeclarationSyntax op when IsFunctionNameSpan(op, selectionRange):
+                {
+                    var semanticModel = await semanticModelAccessor.Invoke(cancellationToken).ConfigureAwait(false);
+                    var metadataName = GetMetadataName(op, semanticModel);
+                    return new FunctionBreakpointNameFactory(op, metadataName, accessor: null);
+                }
+
+                case ConversionOperatorDeclarationSyntax op when op.OperatorKeyword.Span.Contains(selectionRange):
+                {
+                    return new FunctionBreakpointNameFactory(
+                        op,
+                        SyntaxFactory.Identifier(op.ImplicitOrExplicitKeyword.IsKind(SyntaxKind.ExplicitKeyword)
+                            ? WellKnownMemberNames.ExplicitConversionName
+                            : WellKnownMemberNames.ImplicitConversionName),
+                        accessor: null);
+                }
+
                 // New Function Breakpoint window does not add breakpoints for event accessors by event name.
 
                 default:
@@ -84,11 +101,26 @@ namespace CopyFunctionBreakpointName
             }
         }
 
-        private static SyntaxToken GetIndexerMetadataName(IndexerDeclarationSyntax indexer, SemanticModel semanticModel)
+        private static SyntaxToken GetMetadataName(MemberDeclarationSyntax syntax, SemanticModel semanticModel)
         {
-            var metadataName = semanticModel.GetDeclaredSymbol(indexer).MetadataName;
+            var metadataName = semanticModel.GetDeclaredSymbol(syntax).MetadataName;
 
             return SyntaxFactory.Identifier(metadataName);
+        }
+
+        private static bool IsFunctionNameSpan(OperatorDeclarationSyntax syntax, TextSpan span)
+        {
+            if (syntax.OperatorKeyword.Span.Contains(span) || syntax.OperatorToken.Span.Contains(span))
+            {
+                return true;
+            }
+
+            if (span.Start < syntax.OperatorKeyword.Span.Start || syntax.OperatorToken.Span.End < span.End)
+            {
+                return false;
+            }
+
+            return span.Start < syntax.OperatorKeyword.Span.End || syntax.OperatorToken.Span.Start < span.End;
         }
     }
 }
