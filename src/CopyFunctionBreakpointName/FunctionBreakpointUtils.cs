@@ -30,7 +30,7 @@ namespace CopyFunctionBreakpointName
             switch (csharpSyntaxRoot.FindNode(selectionRange))
             {
                 case MethodDeclarationSyntax method when method.ExplicitInterfaceSpecifier == null
-                                                         && method.Identifier.Span.Contains(selectionRange):
+                                                         && IsFunctionNameSpan(method, selectionRange):
                 {
                     return new FunctionBreakpointNameFactory(method, method.Identifier, accessor: null);
                 }
@@ -119,6 +119,17 @@ namespace CopyFunctionBreakpointName
             var metadataName = semanticModel.GetDeclaredSymbol(syntax).MetadataName;
 
             return SyntaxFactory.Identifier(metadataName);
+        }
+
+        private static bool IsFunctionNameSpan(MethodDeclarationSyntax syntax, TextSpan span)
+        {
+            if (syntax.TypeParameterList != null)
+            {
+                return span.End <= syntax.TypeParameterList.Span.End
+                       && syntax.Identifier.Span.Contains(span.Start);
+            }
+
+            return syntax.Identifier.Span.Contains(span);
         }
 
         private static bool IsFunctionNameSpan(OperatorDeclarationSyntax syntax, TextSpan span)
