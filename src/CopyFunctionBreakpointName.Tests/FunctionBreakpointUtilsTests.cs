@@ -139,6 +139,81 @@ struct A
         }
 
         [Test]
+        public static async Task Generics_with_name_selected()
+        {
+            await AssertFunctionBreakpointName(@"
+public static class A<T>
+{
+    public struct B<U, V>
+    {
+        public static void [|C|]<W, X>()
+        {
+        }
+    }
+}", "A<T>.B<U, V>.C<W, X>");
+        }
+
+        [Test]
+        public static async Task Generics_with_cursor_between_name_and_type_parameters()
+        {
+            await AssertFunctionBreakpointName(@"
+public static class A<T>
+{
+    public struct B<U, V>
+    {
+        public static void C[||]<W, X>()
+        {
+        }
+    }
+}", "A<T>.B<U, V>.C<W, X>");
+        }
+
+        [Test]
+        public static async Task Generics_with_name_selection_in_whitespace_not_touching_type_parameters()
+        {
+            await AssertFunctionBreakpointName(@"
+public static class A<T>
+{
+    public struct B<U, V>
+    {
+        public static void [|C |] <W, X>()
+        {
+        }
+    }
+}", "A<T>.B<U, V>.C<W, X>");
+        }
+
+        [Test]
+        public static async Task Generics_with_name_and_type_parameters_selected()
+        {
+            await AssertFunctionBreakpointName(@"
+public static class A<T>
+{
+    public struct B<U, V>
+    {
+        public static void [|C<W, X>|]()
+        {
+        }
+    }
+}", "A<T>.B<U, V>.C<W, X>");
+        }
+
+        [Test]
+        public static async Task Generics_with_only_type_parameters_selected_returns_nothing()
+        {
+            await AssertFunctionBreakpointName(@"
+public static class A<T>
+{
+    public struct B<U, V>
+    {
+        public static void C[|<W, X>|]()
+        {
+        }
+    }
+}", null);
+        }
+
+        [Test]
         public static async Task Namespace_identifier_selection_returns_nothing()
         {
             await AssertFunctionBreakpointName(@"
