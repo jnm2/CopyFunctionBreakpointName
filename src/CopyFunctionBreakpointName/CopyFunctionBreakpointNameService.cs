@@ -2,7 +2,7 @@
 using System.ComponentModel.Design;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
+using System.Windows.Forms;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Editor;
