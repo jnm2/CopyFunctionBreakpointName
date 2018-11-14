@@ -4,7 +4,9 @@
         <Identity Id="jnm2.VisualStudio.CopyFunctionBreakpointName.45b15182-43a5-43c7-8c3a-28a28338cbcb" Version="0.1" Language="en-US" Publisher="Joseph N. Musser II" />
         <DisplayName>Copy Function Breakpoint Name</DisplayName>
         <Description xml:space="preserve">Enables you to right-click and copy a name which the New Function Breakpoint dialog understands. This is useful when you cannot place a breakpoint directly in the current source view; for example, when viewing metadata or decompiled source, or when you’re in a separate instance of Visual Studio from the one in which you want to set the breakpoint.</Description>
+        <MoreInfo>https://github.com/jnm2/CopyFunctionBreakpointName#copyfunctionbreakpointname-extension</MoreInfo>
         <License>..\..\LICENSE.txt</License>
+        <Tags>breakpoint, function, name, clipboard, copy, metadata, decompiled, source</Tags>
     </Metadata>
     <Installation>
         <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[15.0.27703,17.0)" />
