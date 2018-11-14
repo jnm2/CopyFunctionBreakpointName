@@ -21,8 +21,6 @@
   <PropertyGroup>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <LangVersion>latest</LangVersion>
-    <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>Key.snk</AssemblyOriginatorKeyFile>
     <GeneratePkgDefFile>true</GeneratePkgDefFile>
     <IncludeAssemblyInVSIXContainer>true</IncludeAssemblyInVSIXContainer>
     <IncludeDebugSymbolsInVSIXContainer>true</IncludeDebugSymbolsInVSIXContainer>
@@ -60,7 +58,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Key.snk" />
     <None Include="source.extension.vsixmanifest" SubType="Designer" />
     <VSCTCompile Include="CopyFunctionBreakpointNamePackage.vsct" ResourceName="Menus.ctmenu" />
     <EmbeddedResource Include="VSPackage.resx" MergeWithCTO="true" ManifestResourceName="VSPackage" />
