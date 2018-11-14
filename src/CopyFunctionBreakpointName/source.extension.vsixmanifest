@@ -3,7 +3,7 @@
     <Metadata>
         <Identity Id="jnm2.VisualStudio.CopyFunctionBreakpointName.45b15182-43a5-43c7-8c3a-28a28338cbcb" Version="0.1" Language="en-US" Publisher="Joseph N. Musser II" />
         <DisplayName>Copy Function Breakpoint Name</DisplayName>
-        <Description xml:space="preserve">Makes it a breeze to right-click a method or property name (or accessor) and put the 'New Function Breakpoint'-compatible name in the clipboard.</Description>
+        <Description xml:space="preserve">Enables you to right-click and copy a name which the New Function Breakpoint dialog understands. This is useful when you cannot place a breakpoint directly in the current source view; for example, when viewing metadata or decompiled source, or when you’re in a separate instance of Visual Studio from the one in which you want to set the breakpoint.</Description>
         <License>..\..\LICENSE.txt</License>
     </Metadata>
     <Installation>
