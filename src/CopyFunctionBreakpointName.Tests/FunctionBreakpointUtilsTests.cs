@@ -386,7 +386,7 @@ class A
 class A
 {
     int B { [|get|]; }
-}", "A.B.get");
+}", "A.get_B");
         }
 
         [Test]
@@ -396,7 +396,7 @@ class A
 class A
 {
     int B { [|get|] => 0; }
-}", "A.B.get");
+}", "A.get_B");
         }
 
         [Test]
@@ -406,7 +406,7 @@ class A
 class A
 {
     int B { [|get|] { return 0; } }
-}", "A.B.get");
+}", "A.get_B");
         }
 
         [Test]
@@ -416,7 +416,7 @@ class A
 class A
 {
     int B { get; [|set|]; }
-}", "A.B.set");
+}", "A.set_B");
         }
 
         [Test]
@@ -426,7 +426,7 @@ class A
 class A
 {
     int B { [|set|] => _ = 0; }
-}", "A.B.set");
+}", "A.set_B");
         }
 
         [Test]
@@ -436,7 +436,7 @@ class A
 class A
 {
     int B { [|set|] { } }
-}", "A.B.set");
+}", "A.set_B");
         }
 
         [Test]
@@ -466,7 +466,7 @@ class A
 class A
 {
     int this[int index] { [|get|] => 0; }
-}", "A.Item.get");
+}", "A.get_Item");
         }
 
         [Test]
@@ -476,7 +476,7 @@ class A
 class A
 {
     int this[int index] { [|get|] { return 0; } }
-}", "A.Item.get");
+}", "A.get_Item");
         }
 
         [Test]
@@ -486,7 +486,7 @@ class A
 class A
 {
     int this[int index] { [|set|] => _ = 0; }
-}", "A.Item.set");
+}", "A.set_Item");
         }
 
         [Test]
@@ -496,7 +496,7 @@ class A
 class A
 {
     int this[int index] { [|set|] { } }
-}", "A.Item.set");
+}", "A.set_Item");
         }
 
         [Test]
@@ -522,7 +522,7 @@ class A
 {
     [IndexerName(""B"")]
     int this[int index] { [|get|] => 0; }
-}", "A.B.get");
+}", "A.get_B");
         }
 
         [Test]
@@ -535,7 +535,7 @@ class A
 {
     [IndexerName(""B"")]
     int this[int index] { [|set|] { } }
-}", "A.B.set");
+}", "A.set_B");
         }
 
         [Test]

@@ -69,10 +69,7 @@ namespace CopyFunctionBreakpointName
             {
                 case PropertyDeclarationSyntax _:
                 case IndexerDeclarationSyntax _:
-                    sb.Append(memberIdentifier.ValueText).Append('.').Append(accessor.Keyword.ValueText);
-                    break;
                 case EventDeclarationSyntax _:
-                    // New Function Breakpoint window does not recognize `EventName.add` syntax.
                     sb.Append(accessor.Keyword.ValueText).Append('_').Append(memberIdentifier.ValueText);
                     break;
                 default:
