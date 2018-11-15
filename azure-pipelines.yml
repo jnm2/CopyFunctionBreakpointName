@@ -25,7 +25,13 @@ steps:
   displayName: Test
 
 - task: PublishBuildArtifacts@1
-  displayName: Publish artifact
+  displayName: Save VSIX artifact
   inputs:
     PathtoPublish: src/CopyFunctionBreakpointName/bin/Release/CopyFunctionBreakpointName.vsix
     ArtifactName: VSIX
+
+- task: PublishBuildArtifacts@1
+  displayName: Save symbols
+  inputs:
+    PathtoPublish: src/CopyFunctionBreakpointName/bin/Release/CopyFunctionBreakpointName.pdb
+    ArtifactName: Symbols
