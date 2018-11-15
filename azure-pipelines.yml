@@ -2,10 +2,22 @@ pool:
   vmImage: VS2017-Win2016
 
 steps:
+
+- powershell: |
+    . 'build/Update-Version.ps1'
+
+    Update-Version $env:BUILD_BUILDID `
+        -CommitHash $env:BUILD_SOURCEVERSION.Substring(0, 8) `
+        -UpdateBuildNumber {
+            param([string] $BuildNumber)
+            Write-Host "##vso[build.updatebuildnumber]$BuildNumber"
+        }
+  displayName: 'Update version'
+
 - task: VSBuild@1
   displayName: Build
   inputs:
-    solution: '**/*.sln'
+    solution: src
     msbuildArgs: /restore /p:DeployExtension=false
     configuration: Release
 
