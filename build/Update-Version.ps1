@@ -53,13 +53,13 @@ function Get-AutomaticCiVersion {
             })
     }
 
-    $currentTags = $(git tag --list v* --points-at head --sort=-v:refname)
+    $currentTags = @(git tag --list v* --points-at head --sort=-v:refname)
     if ($currentTags.Count -gt 0) {
         # Head is tagged, so the tag is the intended CI version for this build.
         return Get-VersionPrefix $currentTags[0]
     }
 
-    $previousTags = $(git tag --list v* --sort=-v:refname)
+    $previousTags = @(git tag --list v* --sort=-v:refname)
     if ($previousTags.Count -gt 0) {
         # Head is not tagged, so it would be greater than the most recent tagged version.
         $previousVersion = Get-VersionPrefix $previousTags[0]
