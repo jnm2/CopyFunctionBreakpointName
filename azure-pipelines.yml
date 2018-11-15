@@ -1,6 +1,11 @@
 pool:
   vmImage: VS2017-Win2016
 
+trigger:
+  branches:
+    include: [ '*' ]
+    exclude: [ 'refs/tags/*' ]
+
 steps:
 
 - powershell: |
