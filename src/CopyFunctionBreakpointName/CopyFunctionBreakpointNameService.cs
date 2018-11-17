@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel.Design;
 using System.Threading;
 using System.Threading.Tasks;

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.CodeAnalysis.Text;
 
 namespace CopyFunctionBreakpointName.Tests
