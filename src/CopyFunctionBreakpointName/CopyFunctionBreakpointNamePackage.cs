@@ -5,6 +5,7 @@ using System.Threading;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Task = System.Threading.Tasks.Task;
 
@@ -33,11 +34,13 @@ namespace CopyFunctionBreakpointName
 
             var textManager = (IVsTextManager)await GetServiceAsync(typeof(SVsTextManager));
             var menuCommandService = (IMenuCommandService)await GetServiceAsync(typeof(IMenuCommandService));
+            var statusBar = (IVsStatusbar)await GetServiceAsync(typeof(SVsStatusbar));
 
             _ = new CopyFunctionBreakpointNameService(
                 textManager,
                 editorAdaptersFactoryService,
                 menuCommandService,
+                statusBar,
                 JoinableTaskFactory);
         }
     }
