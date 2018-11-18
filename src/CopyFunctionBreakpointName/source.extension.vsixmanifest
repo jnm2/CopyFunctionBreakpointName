@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="jnm2.VisualStudio.CopyFunctionBreakpointName.45b15182-43a5-43c7-8c3a-28a28338cbcb" Version="1.0.0" Language="en-US" Publisher="Joseph Musser" />
+        <Identity Id="jnm2.VisualStudio.CopyFunctionBreakpointName.51F0BA87-5508-434A-ADE8-ACBB04614F69" Version="1.0.0" Language="en-US" Publisher="Joseph Musser" />
         <DisplayName>Copy Function Breakpoint Name</DisplayName>
         <Description xml:space="preserve">Enables you to right-click and copy a name which the New Function Breakpoint dialog understands. This is useful when you cannot place a breakpoint directly in the current source view, e.g. metadata or decompiled source or a separate instance of Visual Studio.</Description>
         <MoreInfo>https://github.com/jnm2/CopyFunctionBreakpointName#copyfunctionbreakpointname-extension</MoreInfo>
