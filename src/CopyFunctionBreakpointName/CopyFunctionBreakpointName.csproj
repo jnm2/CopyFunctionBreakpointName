@@ -9,7 +9,7 @@
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
     <UseCodebase>true</UseCodebase>
     <OutputPath>bin\$(Configuration)\</OutputPath>
-    <DefineConstants>$(Configuration);TRACE</DefineConstants>
+    <DefineConstants>$(Configuration.ToUpperInvariant());TRACE</DefineConstants>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>pdbonly</DebugType>
     <Optimize Condition="'$(Configuration)' == 'Debug'">false</Optimize>
