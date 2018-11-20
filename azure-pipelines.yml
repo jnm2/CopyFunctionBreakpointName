@@ -32,11 +32,45 @@ steps:
 - task: PublishBuildArtifacts@1
   displayName: Save VSIX artifact
   inputs:
-    PathtoPublish: src/CopyFunctionBreakpointName/bin/Release/CopyFunctionBreakpointName.vsix
+    PathtoPublish: src\CopyFunctionBreakpointName\bin\Release\CopyFunctionBreakpointName.vsix
     ArtifactName: VSIX
 
 - task: PublishBuildArtifacts@1
   displayName: Save symbols
   inputs:
-    PathtoPublish: src/CopyFunctionBreakpointName/bin/Release/CopyFunctionBreakpointName.pdb
+    PathtoPublish: src\CopyFunctionBreakpointName\bin\Release\CopyFunctionBreakpointName.pdb
     ArtifactName: Symbols
+
+- task: CopyFiles@2
+  displayName: Stage marketplace publish artifacts
+  inputs:
+    SourceFolder: '$(Build.SourcesDirectory)\resources'
+    Contents: |
+     VsixPublishManifest.json
+     MarketplaceOverview.md
+     context-menu.png
+     created-breakpoint.png
+     new-function-breakpoint-dialog.png
+     new-function-breakpoint-menu.png
+    TargetFolder: $(Build.ArtifactStagingDirectory)\Marketplace
+
+- task: PublishBuildArtifacts@1
+  displayName: Save marketplace publish artifacts
+  inputs:
+    PathtoPublish: $(Build.ArtifactStagingDirectory)\Marketplace
+    ArtifactName: Marketplace
+
+- task: CopyFiles@2
+  displayName: Stage release pipeline source artifacts
+  inputs:
+    SourceFolder: '$(Build.SourcesDirectory)\build'
+    Contents: |
+     Release.ps1
+     ReleasePipeline.ps1
+    TargetFolder: $(Build.ArtifactStagingDirectory)\ReleasePipelineSource
+
+- task: PublishBuildArtifacts@1
+  displayName: Save release pipeline source artifacts
+  inputs:
+    PathtoPublish: $(Build.ArtifactStagingDirectory)\ReleasePipelineSource
+    ArtifactName: ReleasePipelineSource

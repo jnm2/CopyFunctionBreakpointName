@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json.schemastore.org/vsix-publish",
+  "identity": {
+    "internalName": "CopyFunctionBreakpointName"
+  },
+  "categories": [ "other", "coding" ],
+  "overview": "MarketplaceOverview.md",
+  "assetFiles": [
+    {
+      "pathOnDisk": "context-menu.png",
+      "targetPath": "context-menu.png"
+    },
+    {
+      "pathOnDisk": "created-breakpoint.png",
+      "targetPath": "created-breakpoint.png"
+    },
+    {
+      "pathOnDisk": "new-function-breakpoint-dialog.png",
+      "targetPath": "new-function-breakpoint-dialog.png"
+    },
+    {
+      "pathOnDisk": "new-function-breakpoint-menu.png",
+      "targetPath": "new-function-breakpoint-menu.png"
+    }
+  ],
+  "publisher": "jnm2",
+  "repo": "https://github.com/jnm2/CopyFunctionBreakpointName"
+}
