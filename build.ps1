@@ -8,7 +8,7 @@ $visualStudioInstallation ??= & "${env:ProgramFiles(x86)}\Microsoft Visual Studi
 $configuration = 'Release'
 $targetFramework = 'net472'
 
-$msbuild = Join-Path $visualStudioInstallation 'MSBuild\15.0\Bin\MSBuild.exe'
+$msbuild = Join-Path $visualStudioInstallation 'MSBuild\Current\Bin\MSBuild.exe'
 & $msbuild src /restore /p:Configuration=$configuration /v:minimal
 
 $vstest = join-path $visualStudioInstallation 'Common7\IDE\CommonExtensions\Microsoft\TestWindow\VSTest.Console.exe'
