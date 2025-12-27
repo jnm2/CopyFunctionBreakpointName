@@ -4,6 +4,7 @@ $ErrorActionPreference = "Stop";
 Update-Version
 
 $visualStudioInstallation = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.Component.MSBuild -property installationPath
+$visualStudioInstallation ??= & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -prerelease -latest -products * -requires Microsoft.Component.MSBuild -property installationPath
 $configuration = 'Release'
 $targetFramework = 'net472'
 
