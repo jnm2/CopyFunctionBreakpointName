@@ -1,7 +1,9 @@
 using System;
 using System.ComponentModel.Design;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
+using Microsoft;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Shell;
@@ -28,13 +30,19 @@ namespace CopyFunctionBreakpointName
         protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {
             var componentModel = (IComponentModel)await GetServiceAsync(typeof(SComponentModel));
+            Assumes.Present(componentModel);
             var editorAdaptersFactoryService = componentModel.GetService<IVsEditorAdaptersFactoryService>();
 
             await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
 
             var textManager = (IVsTextManager)await GetServiceAsync(typeof(SVsTextManager));
+            Assumes.Present(textManager);
+
             var menuCommandService = (IMenuCommandService)await GetServiceAsync(typeof(IMenuCommandService));
+            Assumes.Present(menuCommandService);
+
             var statusBar = (IVsStatusbar)await GetServiceAsync(typeof(SVsStatusbar));
+            Assumes.Present(statusBar);
 
             _ = new CopyFunctionBreakpointNameService(
                 textManager,
