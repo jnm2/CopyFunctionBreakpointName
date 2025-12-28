@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -1216,7 +1217,7 @@ namespace CopyFunctionBreakpointName.Tests
                 """, null);
         }
 
-        private static async Task AssertFunctionBreakpointName(string annotatedSource, string expected)
+        private static async Task AssertFunctionBreakpointName([StringSyntax("C#-Test")] string annotatedSource, string expected)
         {
             Assert.That(await GetFunctionBreakpointNameAsync(annotatedSource), Is.EqualTo(expected));
         }
