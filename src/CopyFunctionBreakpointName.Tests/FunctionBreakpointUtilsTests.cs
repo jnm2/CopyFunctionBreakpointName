@@ -18,7 +18,7 @@ namespace CopyFunctionBreakpointName.Tests
         public static async Task Null_syntax_root_argument_exception()
         {
             var ex = await Should.ThrowAsync<ArgumentNullException>(
-                () => FunctionBreakpointUtils.GetFunctionBreakpointNameFactoryAsync(syntaxRoot: null, new TextSpan(0, 0), c => null, default));
+                () => FunctionBreakpointUtils.GetFunctionBreakpointNameFactoryAsync(syntaxRoot: null, new TextSpan(0, 0), c => throw new AssertionException("Test setup error"), default));
 
             ex.ParamName.ShouldBe("syntaxRoot");
         }
