@@ -13,7 +13,7 @@ namespace CopyFunctionBreakpointName.Tests
             if (!TryParse(annotatedSource, out var source, out var span))
             {
                 throw new ArgumentException(
-                    "The source must be annotated with \"" + AnnotationStartMarker + "\" and \"" + AnnotationEndMarker + "\" around the selected text.",
+                    $"""The source must be annotated with "{AnnotationStartMarker}" and "{AnnotationEndMarker}" around the selected text.""",
                     paramName);
             }
 
