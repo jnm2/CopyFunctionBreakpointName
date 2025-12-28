@@ -19,14 +19,25 @@ namespace CopyFunctionBreakpointName
             if (syntaxRoot == null) throw new ArgumentNullException(nameof(syntaxRoot));
             if (semanticModelAccessor == null) throw new ArgumentNullException(nameof(semanticModelAccessor));
 
-            if (selectionRange.IsEmpty)
-            {
-                return await GetFunctionBreakpointNameFactoryAsync(syntaxRoot, new TextSpan(selectionRange.Start, 1), semanticModelAccessor, cancellationToken).ConfigureAwait(false)
-                    ?? await GetFunctionBreakpointNameFactoryAsync(syntaxRoot, new TextSpan(selectionRange.Start - 1, 1), semanticModelAccessor, cancellationToken).ConfigureAwait(false);
-            }
-
             if (!(syntaxRoot is CSharpSyntaxNode csharpSyntaxRoot)) return null;
 
+            var result = await GetFactoryCoreAsync(selectionRange, semanticModelAccessor, csharpSyntaxRoot, cancellationToken).ConfigureAwait(false);
+            if (result is null && selectionRange.IsEmpty && selectionRange.Start > 0)
+            {
+                // Try again with a range that includes the character before the caret.
+                var newSelectionRange = new TextSpan(selectionRange.Start - 1, 1);
+                result = await GetFactoryCoreAsync(newSelectionRange, semanticModelAccessor, csharpSyntaxRoot, cancellationToken).ConfigureAwait(false);
+            }
+
+            return result;
+        }
+
+        private static async Task<FunctionBreakpointNameFactory?> GetFactoryCoreAsync(
+            TextSpan selectionRange,
+            Func<CancellationToken, Task<SemanticModel>> semanticModelAccessor,
+            CSharpSyntaxNode csharpSyntaxRoot,
+            CancellationToken cancellationToken)
+        {
             switch (csharpSyntaxRoot.FindNode(selectionRange))
             {
                 case MethodDeclarationSyntax method when method.ExplicitInterfaceSpecifier == null

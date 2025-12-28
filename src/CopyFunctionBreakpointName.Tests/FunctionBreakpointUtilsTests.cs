@@ -1217,6 +1217,23 @@ namespace CopyFunctionBreakpointName.Tests
                 """, null);
         }
 
+        [Test]
+        public static async Task Selection_at_start_of_file_returns_nothing()
+        {
+            await AssertFunctionBreakpointName("""
+                [||]class A { }
+                """, null);
+        }
+
+        [Test]
+        public static async Task Selection_at_end_of_file_returns_nothing()
+        {
+            await AssertFunctionBreakpointName("""
+                class A { }
+                [||]
+                """, null);
+        }
+
         private static async Task AssertFunctionBreakpointName([StringSyntax("C#-Test")] string annotatedSource, string expected)
         {
             Assert.That(await GetFunctionBreakpointNameAsync(annotatedSource), Is.EqualTo(expected));
