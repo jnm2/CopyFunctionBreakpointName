@@ -2,7 +2,9 @@ using System;
 using System.ComponentModel.Design;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Editor;
@@ -21,12 +23,14 @@ namespace CopyFunctionBreakpointName
         private readonly IVsTextManager textManager;
         private readonly IVsEditorAdaptersFactoryService editorAdaptersFactoryService;
         private readonly IVsStatusbar statusBar;
+        private readonly IVsCommandWindow commandWindow;
         private readonly JoinableTaskFactory joinableTaskFactory;
 
         public CopyFunctionBreakpointNameService(IVsTextManager textManager,
             IVsEditorAdaptersFactoryService editorAdaptersFactoryService,
             IMenuCommandService menuCommandService,
             IVsStatusbar statusBar,
+            IVsCommandWindow commandWindow,
             JoinableTaskFactory joinableTaskFactory)
         {
             if (menuCommandService == null) throw new ArgumentNullException(nameof(menuCommandService));
@@ -34,6 +38,7 @@ namespace CopyFunctionBreakpointName
             this.textManager = textManager ?? throw new ArgumentNullException(nameof(textManager));
             this.editorAdaptersFactoryService = editorAdaptersFactoryService ?? throw new ArgumentNullException(nameof(editorAdaptersFactoryService));
             this.statusBar = statusBar ?? throw new ArgumentNullException(nameof(statusBar));
+            this.commandWindow = commandWindow;
             this.joinableTaskFactory = joinableTaskFactory ?? throw new ArgumentNullException(nameof(joinableTaskFactory));
 
             menuCommandService.AddCommand(
@@ -44,7 +49,7 @@ namespace CopyFunctionBreakpointName
         {
             joinableTaskFactory.Run(
                 "Copy function breakpoint name",
-                "Copying the function breakpoint name to the clipboard...",
+                "Opening function breakpoint dialog...",
                 async (progress, cancellationToken) =>
                 {
                     var factory = await GetFunctionBreakpointNameFactoryAsync(cancellationToken);
@@ -57,11 +62,41 @@ namespace CopyFunctionBreakpointName
                     }
                     else
                     {
-                        var clipboardContent = factory.Value.ToString();
-                        Clipboard.SetText(clipboardContent);
-                        statusBar.SetText($"Copied “{clipboardContent}” to the clipboard");
+                        // Don't wait for this to finish because it will deadlock (it waits till ExecuteCommand opens a
+                        // new window, which happens after the containing JoinableTaskFactory.Run call.)
+                        _ = ShowFunctionBreakpointDialogAsync(functionName: factory.ToString());
                     }
                 });
+
+            async Task ShowFunctionBreakpointDialogAsync(string functionName)
+            {
+                var window = await WindowUtils.WaitForNewlyOpenedWindowAsync(
+                    triggerWindowOpening: () =>
+                    {
+                        ThreadHelper.ThrowIfNotOnUIThread();
+                        commandWindow.ExecuteCommand("Debug.FunctionBreakpoint");
+                    },
+                    predicate: window => window.GetType().Name.Contains("Breakpoint", StringComparison.Ordinal));
+
+                var textBox = LogicalTreeHelper.FindLogicalNode(window, "FunctionNameTextBox") as TextBox
+                    // Fallback in case the name changes
+                    ?? FocusManager.GetFocusedElement(window) as TextBox;
+
+                if (textBox is not null)
+                {
+                    textBox.Text = functionName;
+                    textBox.SelectAll();
+                    textBox.Focus();
+                }
+                else
+                {
+                    Clipboard.SetText(functionName);
+
+#pragma warning disable VSTHRD010 // This local function is always invoked on the main thread.
+                    statusBar.SetText($"Could not prefill the breakpoint function name. Copied “{functionName}” to the clipboard instead.");
+#pragma warning restore VSTHRD010
+                }
+            }
         }
 
         private void UpdateMenuCommandStatus(object sender, EventArgs e)

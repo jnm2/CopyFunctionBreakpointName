@@ -44,11 +44,15 @@ namespace CopyFunctionBreakpointName
             var statusBar = (IVsStatusbar)await GetServiceAsync(typeof(SVsStatusbar));
             Assumes.Present(statusBar);
 
+            var commandWindow = (IVsCommandWindow)await GetServiceAsync(typeof(SVsCommandWindow));
+            Assumes.Present(commandWindow);
+
             _ = new CopyFunctionBreakpointNameService(
                 textManager,
                 editorAdaptersFactoryService,
                 menuCommandService,
                 statusBar,
+                commandWindow,
                 JoinableTaskFactory);
         }
     }
